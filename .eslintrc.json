@@ -19,6 +19,10 @@
         "prettier"
     ],
     "rules": {
+        "no-restricted-syntax":"off",
+        "class-methods-use-this": "off",
+        "import/prefer-default-export": "off",
+        "no-console": "off",
         "prettier/prettier": "error",
         "import/extensions": [
             "error",
