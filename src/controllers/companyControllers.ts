@@ -84,7 +84,7 @@ export default class CompanyController {
   }
 
   public async update(request: Request, response: Response): Promise<Response> {
-    const { id } = request.params;
+    const { companyId } = request.params;
     const { type, location } = request.body;
 
     try {
@@ -94,12 +94,56 @@ export default class CompanyController {
       };
 
       const responseFromDb = await Company.findByIdAndUpdate(
-        id,
+        companyId,
         updatedCompany,
         {
           new: true,
         },
       );
+
+      return response.status(200).json(responseFromDb);
+    } catch (error) {
+      return response
+        .status(500)
+        .json({ message: 'Request failed, please try again' });
+    }
+  }
+
+  public async updateActivity(
+    request: Request,
+    response: Response,
+  ): Promise<Response> {
+    const { id } = request.user;
+    const { companyId } = request.params;
+
+    try {
+      const currentCompany = await Company.findById(companyId);
+
+      if (!currentCompany) {
+        return response
+          .status(400)
+          .json({ message: 'The company was not found' });
+      }
+
+      if (currentCompany.votesForInactivity?.includes(id)) {
+        return response
+          .status(406)
+          .json({ message: 'User already voted for inactivity' });
+      }
+
+      let responseFromDb = await Company.findByIdAndUpdate(
+        companyId,
+        { $push: { votesForInactivity: id } },
+        {
+          new: true,
+        },
+      );
+
+      if (responseFromDb?.votesForInactivity?.length === 5) {
+        responseFromDb = await Company.findByIdAndUpdate(companyId, {
+          isActive: false,
+        });
+      }
 
       return response.status(200).json(responseFromDb);
     } catch (error) {

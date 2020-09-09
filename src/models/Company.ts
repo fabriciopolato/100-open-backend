@@ -62,10 +62,12 @@ const CompanySchema = new Schema({
     type: Boolean,
     default: true,
   },
-  votesForInactivity: {
-    type: [String],
-    default: [],
-  },
+  votesForInactivity: [
+    {
+      type: String,
+      default: [],
+    },
+  ],
 });
 
 const Company = model<ICompany>('Company', CompanySchema);
