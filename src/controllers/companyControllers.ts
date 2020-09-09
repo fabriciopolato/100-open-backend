@@ -114,7 +114,7 @@ export default class CompanyController {
     response: Response,
   ): Promise<Response> {
     const { id } = request.user;
-    const { companyId } = request.params;
+    const companyId = request.params.id;
 
     try {
       const currentCompany = await Company.findById(companyId);
@@ -140,9 +140,15 @@ export default class CompanyController {
       );
 
       if (responseFromDb?.votesForInactivity?.length === 5) {
-        responseFromDb = await Company.findByIdAndUpdate(companyId, {
-          isActive: false,
-        });
+        responseFromDb = await Company.findByIdAndUpdate(
+          companyId,
+          {
+            isActive: false,
+          },
+          {
+            new: true,
+          },
+        );
       }
 
       return response.status(200).json(responseFromDb);
