@@ -6,5 +6,6 @@ const companyControllers = new CompanyControllers();
 
 router.post('/', companyControllers.create);
 router.get('/', companyControllers.show);
+router.put('/:id', companyControllers.update);
 
 export default router;

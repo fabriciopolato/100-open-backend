@@ -82,4 +82,30 @@ export default class CompanyController {
       });
     }
   }
+
+  public async update(request: Request, response: Response): Promise<Response> {
+    const { id } = request.params;
+    const { type, location } = request.body;
+
+    try {
+      const updatedCompany = {
+        type,
+        // location,
+      };
+
+      const responseFromDb = await Company.findByIdAndUpdate(
+        id,
+        updatedCompany,
+        {
+          new: true,
+        },
+      );
+
+      return response.status(200).json(responseFromDb);
+    } catch (error) {
+      return response
+        .status(500)
+        .json({ message: 'Request failed, please try again' });
+    }
+  }
 }
