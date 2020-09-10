@@ -84,7 +84,7 @@ export default class CompanyController {
   }
 
   public async update(request: Request, response: Response): Promise<Response> {
-    const { companyId } = request.params;
+    const companyId = request.params.id;
     const { type, location } = request.body;
 
     try {
