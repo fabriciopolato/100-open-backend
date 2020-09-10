@@ -47,9 +47,10 @@ export default class UserController {
 
       const responseFromDb = await User.create(newUser);
 
-      return response
-        .status(201)
-        .json({ accessToken: genToken(responseFromDb) });
+      return response.status(201).json({
+        accessToken: genToken(responseFromDb),
+        userId: responseFromDb._id,
+      });
     } catch (error) {
       console.log(error);
       return response.status(500).json({ message: 'Failed to register user' });
@@ -82,6 +83,7 @@ export default class UserController {
 
       return response.status(200).json({
         accessToken: genToken(user),
+        userId: user._id,
       });
     } catch (error) {
       return response.status(500).json({ message: 'Failed to login' });
