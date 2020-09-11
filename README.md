@@ -1,6 +1,6 @@
 # Desafio 100 Open Startups
 
-## About The Project
+## About the Project
 
 The challenge was to build a system for startups registration. I created a home, login, signup, create company and edit company screens. The site is responsive from 414px up. This is the back end of the application. To access the front end, go to the following repository: https://github.com/fabriciopolato/100-open-frontend.
 
@@ -9,6 +9,9 @@ The challenge was to build a system for startups registration. I created a home,
 - [Typescript](https://www.typescriptlang.org/) - TypeScript is a typed superset of JavaScript that compiles to plain JavaScript.
 - [NodeJS](https://nodejs.org/en/) - Node.js® is a JavaScript runtime built on Chrome's V8 JavaScript engine.
 - [MongoDB](https://www.mongodb.com/) - MongoDB is a general purpose, document-based, distributed database built for modern application developers and for the cloud era.
+
+### More Info about this API
+https://documenter.getpostman.com/view/10972677/TVK5cMG9
 
 <!-- GETTING STARTED -->
 
@@ -48,7 +51,6 @@ yarn dev
 ```sh
 PORTS: 3001 and 3000.
 ```
-
 
 <!-- CONTACT -->
 
