@@ -124,7 +124,7 @@ export default class CompanyController {
     try {
       if (!location.state || !location.country) {
         const responseFromGeoNames = await axios.get(
-          'http://api.geonames.org/searchJSON',
+          'https://api.geonames.org/searchJSON',
           {
             params: {
               username: process.env.USERNAME_GEO_NAMES,
