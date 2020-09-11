@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import axios from 'axios';
 import { companyFields } from '../utils/requiredFields';
 import Company from '../models/Company';
 
@@ -20,30 +21,59 @@ export default class CompanyController {
       }
     }
 
+    const verifyExistingCompany = await Company.findOne({ name });
+
+    if (verifyExistingCompany) {
+      return response
+        .status(400)
+        .json({ message: 'Company already registered' });
+    }
+
     if (description?.length > 140) {
       return response.status(400).json({
         message: 'Description must have up to 140 characters',
       });
     }
 
+    const newCompany = {
+      name,
+      description,
+      type,
+      location,
+    };
+
+    if (!description) {
+      delete newCompany.description;
+    }
+
     try {
-      const verifyExistingCompany = await Company.findOne({ name });
+      if (!location.state || !location.country) {
+        const responseFromGeoNames = await axios.get(
+          'http://api.geonames.org/searchJSON',
+          {
+            params: {
+              username: process.env.USERNAME_GEO_NAMES,
+              type: 'json',
+              maxRows: 10,
+              featureClass: 'P',
+              q: location.city,
+            },
+          },
+        );
+        const arrayLengthLocations = responseFromGeoNames.data.geonames.length;
 
-      if (verifyExistingCompany) {
-        return response
-          .status(400)
-          .json({ message: 'Company already registered' });
-      }
+        if (arrayLengthLocations !== 1) {
+          return response
+            .status(400)
+            .json({ message: 'Please, provide a valid location' });
+        }
 
-      const newCompany = {
-        name,
-        description,
-        type,
-        // location,
-      };
+        const city = responseFromGeoNames.data.geonames[0].name;
+        const state =
+          responseFromGeoNames.data.geonames[0].adminCodes1.ISO3166_2;
+        const country = responseFromGeoNames.data.geonames[0].countryName;
 
-      if (!description) {
-        delete newCompany.description;
+        newCompany.location = { city, state, country };
       }
 
       const responseFromDb = await Company.create(newCompany);
@@ -52,8 +82,8 @@ export default class CompanyController {
     } catch (error) {
       console.log(error);
       return response
-        .status(500)
-        .json({ message: 'Failed to register company' });
+        .status(400)
+        .json({ message: 'Error to register company' });
     }
   }
 
