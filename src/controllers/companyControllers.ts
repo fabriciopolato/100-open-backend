@@ -80,7 +80,6 @@ export default class CompanyController {
 
       return response.status(201).json({ responseFromDb });
     } catch (error) {
-      console.log(error);
       return response
         .status(400)
         .json({ message: 'Error to register company' });
@@ -117,11 +116,40 @@ export default class CompanyController {
     const companyId = request.params.id;
     const { type, location } = request.body;
 
+    const updatedCompany = {
+      type,
+      location,
+    };
+
     try {
-      const updatedCompany = {
-        type,
-        // location,
-      };
+      if (!location.state || !location.country) {
+        const responseFromGeoNames = await axios.get(
+          'http://api.geonames.org/searchJSON',
+          {
+            params: {
+              username: process.env.USERNAME_GEO_NAMES,
+              type: 'json',
+              maxRows: 10,
+              featureClass: 'P',
+              q: location.city,
+            },
+          },
+        );
+        const arrayLengthLocations = responseFromGeoNames.data.geonames.length;
+
+        if (arrayLengthLocations !== 1) {
+          return response
+            .status(400)
+            .json({ message: 'Please, provide a valid location' });
+        }
+
+        const city = responseFromGeoNames.data.geonames[0].name;
+        const state =
+          responseFromGeoNames.data.geonames[0].adminCodes1.ISO3166_2;
+        const country = responseFromGeoNames.data.geonames[0].countryName;
+
+        updatedCompany.location = { city, state, country };
+      }
 
       const responseFromDb = await Company.findByIdAndUpdate(
         companyId,
